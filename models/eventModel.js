@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const eventSchema = new Schema({
   title: { type: String, required: true, trim: true },
   description: { type: String, required: true },
-  // date: { type: Date, required: true },
   startDate: {
     type: Date,
     required: true,
@@ -36,7 +35,6 @@ const eventSchema = new Schema({
     default: Date.now,
   },
 });
-
 // Index for geospatial queries
 eventSchema.index({ location: "2dsphere" });
 // Create a model using schema

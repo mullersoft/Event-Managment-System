@@ -61,9 +61,29 @@ const getEventById = async (req, res) => {
     res.status(500).json({ message: "Error fetching event.", err });
   }
 };
-
+const updateEvent = async (req, res) => {
+  try {
+    const event = await Event.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({ status: "success", data: event });
+  } catch (err) {
+    res.status(404).json({ status: "fail", message: err });
+  }
+};
+const deleteEvent = async (req, res) => {
+  try {
+    await Event.findByIdAndDelete(req.params.id);
+    res.status(204).json({ status: "success", data: null });
+  } catch (err) {
+    res.status(404).json({ status: "fail", message: err });
+  }
+};
 module.exports = {
   createEvent,
   getAllEvents,
   getEventById,
+  updateEvent,
+  deleteEvent,
 };
