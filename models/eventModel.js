@@ -4,36 +4,34 @@ const Schema = mongoose.Schema;
 const eventSchema = new Schema({
   title: { type: String, required: true, trim: true },
   description: { type: String, required: true },
-  startDate: {
-    type: Date,
-    required: true,
-  },
-  endDate: {
-    type: Date,
-    required: true,
-  },
+  startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
+  duration: { type: Number, required: true }, // duration in days
   location: {
     type: {
       type: String,
       enum: ["Point"], // 'location.type' must be 'Point'
       required: true,
     },
-    coordinates: {
-      type: [Number],
-      required: true,
-    },
-    formattedAddress: {
-      type: String,
-      required: true,
-    },
+    coordinates: { type: [Number], required: true },
+    formattedAddress: { type: String, required: true },
   },
   capacity: { type: Number, required: true },
   organizer: { type: Schema.Types.ObjectId, ref: "User" },
   registrations: [{ type: Schema.Types.ObjectId, ref: "Registration" }],
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  createdAt: { type: Date, default: Date.now },
+  category: { type: String, required: true },
+  price: { type: Number, default: 0 },
+  status: {
+    type: String,
+    enum: ["Scheduled", "Cancelled", "Completed"],
+    default: "Scheduled",
   },
+  tags: [String],
+  imageUrl: { type: String },
+  agenda: { type: String },
+  speakers: [{ type: String }],
+  sponsors: [{ type: String }],
 });
 // Index for geospatial queries
 eventSchema.index({ location: "2dsphere" });

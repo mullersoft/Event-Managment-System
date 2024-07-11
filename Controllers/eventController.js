@@ -1,15 +1,32 @@
 const Event = require("./../models/eventModel");
-
 const createEvent = async (req, res) => {
   try {
-    const { title, description, startDate, endDate, location, capacity } =
-      req.body;
+    const {
+      title,
+      description,
+      startDate,
+      endDate,
+      location,
+      capacity,
+      category,
+      price,
+      status,
+      tags,
+      imageUrl,
+      agenda,
+      speakers,
+      sponsors,
+    } = req.body;
+    // Calculate duration in days, rounded up
+    const diffInMilliseconds = new Date(endDate) - new Date(startDate);
+    const duration = Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24)); // duration in days, rounded up
     // Create new Event instance
     const event = new Event({
       title,
       description,
       startDate,
       endDate,
+      duration,
       capacity,
       organizer: req.userId,
       location: {
@@ -17,7 +34,16 @@ const createEvent = async (req, res) => {
         coordinates: [location.longitude, location.latitude],
         formattedAddress: location.formattedAddress,
       },
+      category,
+      price,
+      status,
+      tags,
+      imageUrl,
+      agenda,
+      speakers,
+      sponsors,
     });
+
     // Save event to database
     const savedEvent = await event.save();
     // Return success response
@@ -33,12 +59,30 @@ const createEvent = async (req, res) => {
 
 const getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find();
+    // build query
+    //1)filtering
+    const queryObj = { ...req.query }
+    const excludeFields = ['page', 'sort', 'limit', 'fields']
+    excludeFields.forEach(el =>delete queryObj[el])
+    // console.log(req.query, queryObj);
+    // const events = await Event.find();
+    // const events = await Event.find({capacity:500, duration:3});
+    // const events = await Event.find().where("duration").equals(3).where("capacity").equals(500)
+    // const events = await Event.find(queryObj);
+    //2)advanced filtering
+    let queryString = JSON.stringify(queryObj);
+    queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g,
+    match => `$${match}`)
+    console.log(JSON.parse(queryString))
+    const query = Event.find(JSON.parse(queryString));
+    // console.log(req.query)
+    //excute the query
+    const events = await query
+    //send the response
     res.status(200).json({
       status: "success",
       result: events.length,
       data: { events },
-      // events,
     });
   } catch (err) {
     res.status(400).json({
@@ -51,7 +95,7 @@ const getEventById = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
     if (!event) {
-      return res.status(404).json({ message: "event not found!" });
+      return res.status(404).json({ message: "Event not found!" });
     }
     res.status(200).json({
       status: "success",
@@ -80,6 +124,7 @@ const deleteEvent = async (req, res) => {
     res.status(404).json({ status: "fail", message: err });
   }
 };
+
 module.exports = {
   createEvent,
   getAllEvents,
