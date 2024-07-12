@@ -19,7 +19,7 @@ const eventSchema = new Schema({
   capacity: { type: Number, required: true },
   organizer: { type: Schema.Types.ObjectId, ref: "User" },
   registrations: [{ type: Schema.Types.ObjectId, ref: "Registration" }],
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now,select:false },
   category: { type: String, required: true },
   price: { type: Number, default: 0 },
   status: {

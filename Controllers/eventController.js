@@ -43,7 +43,6 @@ const createEvent = async (req, res) => {
       speakers,
       sponsors,
     });
-
     // Save event to database
     const savedEvent = await event.save();
     // Return success response
@@ -56,28 +55,39 @@ const createEvent = async (req, res) => {
     res.status(500).send({ message: "Error creating event.", error });
   }
 };
-
 const getAllEvents = async (req, res) => {
   try {
     // build query
-    //1)filtering
-    const queryObj = { ...req.query }
-    const excludeFields = ['page', 'sort', 'limit', 'fields']
-    excludeFields.forEach(el =>delete queryObj[el])
-    // console.log(req.query, queryObj);
+    //1a)filtering
+    const queryObj = { ...req.query };
+    const excludeFields = ["page", "sort", "limit", "fields"];
+    excludeFields.forEach((el) => delete queryObj[el]);
     // const events = await Event.find();
-    // const events = await Event.find({capacity:500, duration:3});
-    // const events = await Event.find().where("duration").equals(3).where("capacity").equals(500)
-    // const events = await Event.find(queryObj);
-    //2)advanced filtering
+    //2b)advanced filtering
     let queryString = JSON.stringify(queryObj);
-    queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g,
-    match => `$${match}`)
-    console.log(JSON.parse(queryString))
-    const query = Event.find(JSON.parse(queryString));
-    // console.log(req.query)
-    //excute the query
-    const events = await query
+    queryString = queryString.replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      (match) => `$${match}`
+    );
+    // console.log(JSON.parse(queryString))
+    let query = Event.find(JSON.parse(queryString));
+    //2)sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      console.log(sortBy);
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("-createdAt");
+    }
+    // field limiting.join
+    if (req.query.fields) {
+      const fields = req.query.fields.split(", ").join(" ");
+      query = query.select(fields);
+    } else {
+      query = query.select("-__v");
+    }
+    //execute the query
+    const events = await query;
     //send the response
     res.status(200).json({
       status: "success",
