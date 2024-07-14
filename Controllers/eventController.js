@@ -1,6 +1,7 @@
 const Event = require("./../models/eventModel");
 const catchAsync = require("../utils/catchAsync");
-const createEvent = catchAsync(async (req, res,next) => {
+const AppError = require("./../utils/appError");
+const createEvent = catchAsync(async (req, res, next) => {
   const {
     title,
     description,
@@ -46,7 +47,7 @@ const createEvent = catchAsync(async (req, res,next) => {
   // Save event to database
   const savedEvent = await event.save();
 });
-const getAllEvents = catchAsync(async (req, res,next) => {
+const getAllEvents = catchAsync(async (req, res, next) => {
   // build query
   //1a)filtering
   const queryObj = { ...req.query };
@@ -94,25 +95,35 @@ const getAllEvents = catchAsync(async (req, res,next) => {
     data: { events },
   });
 });
-const getEventById = catchAsync(async (req, res,next) => {
+const getEventById = catchAsync(async (req, res, next) => {
   const event = await Event.findById(req.params.id);
+  // found error handling(404)
   if (!event) {
-    return res.status(404).json({ message: "Event not found!" });
+    return next(new AppError("Event not found!", 404));
+    // return res.status(404).json({ message: "Event not found!" });
   }
   res.status(200).json({
     status: "success",
     data: { event },
   });
 });
-const updateEvent = catchAsync(async (req, res,next) => {
+const updateEvent = catchAsync(async (req, res, next) => {
   const event = await Event.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
+  // found error handling(404)
+  if (!event) {
+    return next(new AppError("Event not found!", 404));
+  }
   res.status(200).json({ status: "success", data: event });
 });
-const deleteEvent = catchAsync(async (req, res,next) => {
-  await Event.findByIdAndDelete(req.params.id);
+const deleteEvent = catchAsync(async (req, res, next) => {
+  const event = await Event.findByIdAndDelete(req.params.id);
+  // found error handling(404)
+  if (!event) {
+    return next(new AppError("Event not found!", 404));
+  }
   res.status(204).json({ status: "success", data: null });
 });
 module.exports = {
