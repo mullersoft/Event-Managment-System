@@ -2,12 +2,14 @@ const express = require("express");
 const eventRoute = require("./routes/eventRoute");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./Controllers/errorController");
+const userRouter = require("./routes/userRoutes");
 const app = express();
 // Middleware to parse JSON bodies
 app.use(express.json());
 //  Middleware to parse URL-encoded bodies
 app.use(express.urlencoded({ extended: false }));
 app.use("/api/v1/event", eventRoute);
+app.use("/api/v1/users", userRouter);
 //Handling Unhandled Routes
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
