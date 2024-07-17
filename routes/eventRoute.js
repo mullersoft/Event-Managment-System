@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const eventController = require("./../Controllers/eventController");
+const authController = require("../controllers/authController");
 // const authMiddleware = require("../middleware/authMiddleware");
 // Route to get all events
-router.get("/", eventController.getAllEvents);
+router.get("/", authController.protect, eventController.getAllEvents);
 // Route to get a single event by ID
 router.get("/:id", eventController.getEventById);
 // Route to create a new event (restricted to organizers/admins)

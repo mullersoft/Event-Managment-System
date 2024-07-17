@@ -46,6 +46,9 @@ const createEvent = catchAsync(async (req, res, next) => {
   });
   // Save event to database
   const savedEvent = await event.save();
+  res
+    .status(201)
+    .json({ message: "Event created successfully!", event: savedEvent });
 });
 const getAllEvents = catchAsync(async (req, res, next) => {
   // build query
