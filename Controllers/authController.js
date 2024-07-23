@@ -24,10 +24,11 @@ const createSendToken = (user, statusCode, res) => {
   res.cookie("jwt", token, cookieOptions);
   // Remove password from output
   user.password = undefined;
+  console.log(user.password);
   res.status(statusCode).json({
     status: "success",
     token,
-    data: user,
+    data: { user },
   });
 };
 exports.signup = catchAsync(async (req, res, next) => {
@@ -40,21 +41,14 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!email || !password) {
     next(new AppError("Please provide email and password!", 400));
   }
-  // 2) Find user and select password
+  // 2) Check if user exists and password is correct
   const user = await User.findOne({ email }).select("+password");
   // console.log(user);
-  // 3) Check if user exists and password is correct
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError("Incorrect email or password", 401));
   }
-  // 4) If everything is ok, send token to client
+  // 3) If everything is ok, send token to client
   createSendToken(user, 200, res);
-
-  // const token = signToken(user._id);
-  // res.status(200).json({
-  //   status: 'success',
-  //   token,
-  // });
 });
 exports.protect = catchAsync(async (req, res, next) => {
   //1) getting token and check of it's there
@@ -114,12 +108,12 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const resetURL = `${req.protocol}://${req.get(
     "host"
   )}/api/v1/users/resetPassword/${resetToken}`;
-  const message = `forgot your password? Submit a patch request with your new password and passwordConfirmation to:${resetURL}.\n if you did not forgot your password, ignore this email`;
+  const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to:${resetURL}.\nif you did not forgot your password, ignore this email`;
   // console.log('reset url:', resetURL);
   try {
     await sendEmail({
       email: user.email,
-      subject: "Your password reset token (valid for 10min",
+      subject: "Your password reset token (valid for 10min)",
       message,
     });
     res.status(200).json({
@@ -139,6 +133,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   }
 });
 exports.resetPassword = catchAsync(async (req, res, next) => {
+  //1)get the user based on the token
   const hashedToken = crypto
     .createHash("sha256")
     .update(req.params.token)
@@ -147,6 +142,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     passwordRestToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
   });
+  //2)if token dos not expired and there is user ,set the new password
   if (!user) {
     return next(new AppError("Token is invalid or has expired", 400));
   }
@@ -156,24 +152,22 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.PasswordResetExpires = undefined;
   await user.save();
   createSendToken(user, 200, res);
-  // const token = signToken(user._id);
-  // res.status(200).json({
-  //   status: 'success',
-  //   token,
-  // });
 });
-exports.updatePassword = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id).select("+password");
-  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
-    return next(new AppError("Your current password is wrong.", 401));
+exports.updatePassword = catchAsync(
+  //1)get the user from collection
+  async (req, res, next) => {
+    const user = await User.findById(req.user.id).select("+password");
+    //2)check if posted current password
+    if (
+      !(await user.correctPassword(req.body.passwordCurrent, user.password))
+    ) {
+      return next(new AppError("Your current password is wrong.", 401));
+    }
+    //3)if no, update password
+    //4)log user in send JWT
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    await user.save();
+    createSendToken(user, 200, res);
   }
-  user.password = req.body.password;
-  user.passwordConfirm = req.body.passwordConfirm;
-  await user.save();
-  createSendToken(user, 200, res);
-  // const token = signToken(user._id);
-  // res.status(200).json({
-  //   status: 'success',
-  //   token,
-  // });
-});
+);

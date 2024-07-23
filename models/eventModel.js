@@ -17,9 +17,9 @@ const eventSchema = new Schema({
     formattedAddress: { type: String, required: true },
   },
   capacity: { type: Number, required: true },
-  organizer: { type: Schema.Types.ObjectId, ref: "User" },
+  organizers: [{ type: Schema.Types.ObjectId, ref: "User" }],
   registrations: [{ type: Schema.Types.ObjectId, ref: "Registration" }],
-  createdAt: { type: Date, default: Date.now,select:false },
+  createdAt: { type: Date, default: Date.now, select: false },
   category: { type: String, required: true },
   price: { type: Number, default: 0 },
   status: {
@@ -32,6 +32,15 @@ const eventSchema = new Schema({
   agenda: { type: String },
   speakers: [{ type: String }],
   sponsors: [{ type: String }],
+});
+//query middleware
+eventSchema.pre(/^find/, function (next) {
+  this.populate(
+    { path: "organizers", select: "-__v -passwordChangedAt" }
+    // "organizers"
+    // "name email"
+  );
+  next();
 });
 // Index for geospatial queries
 eventSchema.index({ location: "2dsphere" });
