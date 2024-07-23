@@ -10,6 +10,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const { whitelist } = require("validator");
 const hpp = require("hpp");
+const reviewRouter = require("./routes/reviewRoute");
 const app = express();
 //1)Global midlwares
 // set security http headers
@@ -20,7 +21,7 @@ if (process.env.NODE_ENV === "development") {
 }
 //limit request from the same API
 const limiter = rateLimiter({
-  max: 3,
+  max: 100,
   windowMS: 60 * 60 * 1000,
   message: "to many requests from this IP, please try again in an hour",
 });
@@ -37,9 +38,10 @@ app.use(mongoSanitize());
 app.use(xss());
 // prevent parametr pollution
 app.use(hpp({ whitelist: ["duration"] }));
-//2)routes
+//2)Routes
 app.use("/api/v1/event", eventRoute);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/reviews", reviewRouter);
 //Handling Unhandled Routes
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

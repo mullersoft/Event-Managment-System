@@ -1,7 +1,6 @@
 const Event = require("./../models/eventModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("./../utils/appError");
-
 const createEvent = catchAsync(async (req, res, next) => {
   const {
     title,
@@ -55,7 +54,6 @@ const createEvent = catchAsync(async (req, res, next) => {
     .status(201)
     .json({ message: "Event created successfully!", event: savedEvent });
 });
-
 const getAllEvents = catchAsync(async (req, res, next) => {
   // Build query
   const queryObj = { ...req.query };
@@ -107,15 +105,12 @@ const getAllEvents = catchAsync(async (req, res, next) => {
     data: { events },
   });
 });
-
 const getEventById = catchAsync(async (req, res, next) => {
-  const event = await Event.findById(req.params.id)
-
+  const event = await Event.findById(req.params.id).populate('reviews')
   // Error handling for not found
   if (!event) {
     return next(new AppError("Event not found!", 404));
   }
-
   res.status(200).json({
     status: "success",
     data: { event },
