@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const eventController = require("./../Controllers/eventController");
+const eventController = require("../Controllers/eventController");
 const authController = require("../controllers/authController");
+const reviewRouter = require("../routes/reviewRoute");
 // const authMiddleware = require("../middleware/authMiddleware");
+router.use("/:eventId/reviews",reviewRouter)
 // Route to get all events
 router
   .route("/")
@@ -14,7 +16,15 @@ router
   .patch(eventController.updateEvent)
   .delete(
     authController.protect,
-    authController.restrictedTo('admin'),
+    authController.restrictedTo("admin"),
     eventController.deleteEvent
-  );
+);
+//   //nested route
+// router
+//   .route("/:eventId/reviews")
+//   .post(
+//     authController.protect,
+//     authController.restrictedTo("participant"),
+//     reviewController.createReviews
+//   );
 module.exports = router;
