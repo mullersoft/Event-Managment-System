@@ -1,6 +1,7 @@
-const Event = require("./../models/eventModel");
+const Event = require("../models/eventModel");
 const catchAsync = require("../utils/catchAsync");
-const AppError = require("./../utils/appError");
+const AppError = require("../utils/appError");
+const factory = require("./handlerFactory");
 const createEvent = catchAsync(async (req, res, next) => {
   const {
     title,
@@ -106,7 +107,7 @@ const getAllEvents = catchAsync(async (req, res, next) => {
   });
 });
 const getEventById = catchAsync(async (req, res, next) => {
-  const event = await Event.findById(req.params.id).populate('reviews')
+  const event = await Event.findById(req.params.id).populate("reviews");
   // Error handling for not found
   if (!event) {
     return next(new AppError("Event not found!", 404));
@@ -116,7 +117,6 @@ const getEventById = catchAsync(async (req, res, next) => {
     data: { event },
   });
 });
-
 const updateEvent = catchAsync(async (req, res, next) => {
   const event = await Event.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
@@ -127,20 +127,19 @@ const updateEvent = catchAsync(async (req, res, next) => {
   if (!event) {
     return next(new AppError("Event not found!", 404));
   }
-
   res.status(200).json({ status: "success", data: event });
 });
-
-const deleteEvent = catchAsync(async (req, res, next) => {
-  const event = await Event.findByIdAndDelete(req.params.id);
-
-  // Error handling for not found
-  if (!event) {
-    return next(new AppError("Event not found!", 404));
-  }
-
-  res.status(204).json({ status: "success", data: null });
-});
+// exports.deleteEvent = factory.deleteOne(Event);
+// Use the factory function to create the deleteEvent method
+const deleteEvent = factory.deleteOne(Event);
+// const deleteEvent = catchAsync(async (req, res, next) => {
+//   const event = await Event.findByIdAndDelete(req.params.id);
+//   // Error handling for not found
+//   if (!event) {
+//     return next(new AppError("Event not found!", 404));
+//   }
+//   res.status(204).json({ status: "success", data: null });
+// });
 module.exports = {
   createEvent,
   getAllEvents,
