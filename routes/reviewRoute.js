@@ -8,7 +8,8 @@ router
   .post(
     authController.protect,
     authController.restrictedTo("participant"),
+    reviewController.setEventUserIds,
     reviewController.createReviews
 );
-  router.route("/:id").delete(reviewController.deleteReview);
+  router.route("/:id").patch(reviewController.updateReview).delete(reviewController.deleteReview);
 module.exports = router;
