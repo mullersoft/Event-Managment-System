@@ -11,11 +11,14 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
     data: { reviews },
   });
 });
-exports.setEventUserIds =  (req, res, next) => {
+exports.setEventUserIds = (req, res, next) => {
   //allow nested routes
   if (!req.body.event) req.body.event = req.params.eventId;
   if (!req.body.user) req.body.user = req.user.id;
-next()}
-exports.createReviews = factory.createOne(Review)
+  next();
+};
+// exports.getAllReviews = factory.getAll(Review)
+exports.getReview = factory.getOne(Review)
+exports.createReviews = factory.createOne(Review);
 exports.updateReview = factory.updateOne(Review);
 exports.deleteReview = factory.deleteOne(Review);

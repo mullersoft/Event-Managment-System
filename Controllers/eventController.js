@@ -106,39 +106,10 @@ const getAllEvents = catchAsync(async (req, res, next) => {
     data: { events },
   });
 });
-const getEventById = catchAsync(async (req, res, next) => {
-  const event = await Event.findById(req.params.id).populate("reviews");
-  // Error handling for not found
-  if (!event) {
-    return next(new AppError("Event not found!", 404));
-  }
-  res.status(200).json({
-    status: "success",
-    data: { event },
-  });
-});
+// const getAllEvents = factory.getAll(Event)
+const getEventById = factory.getOne(Event, { path: "reviews" });
 const updateEvent = factory.updateOne(Event);
-// const updateEvent = catchAsync(async (req, res, next) => {
-//   const event = await Event.findByIdAndUpdate(req.params.id, req.body, {
-//     new: true,
-//     runValidators: true,
-//   });
-//   // Error handling for not found
-//   if (!event) {
-//     return next(new AppError("Event not found!", 404));
-//   }
-//   res.status(200).json({ status: "success", data: event });
-// });
-// Use the factory function to create the deleteEvent method
 const deleteEvent = factory.deleteOne(Event);
-// const deleteEvent = catchAsync(async (req, res, next) => {
-//   const event = await Event.findByIdAndDelete(req.params.id);
-//   // Error handling for not found
-//   if (!event) {
-//     return next(new AppError("Event not found!", 404));
-//   }
-//   res.status(204).json({ status: "success", data: null });
-// });
 module.exports = {
   createEvent,
   getAllEvents,
