@@ -22,7 +22,7 @@ const eventSchema = new Schema(
     registrations: [{ type: Schema.Types.ObjectId, ref: "Registration" }],
     createdAt: { type: Date, default: Date.now, select: false },
     category: { type: String, required: true },
-    price: { type: Number, default: 0 },
+    price: { type: Number,required:[true,'an event must have a price'], default: 0 },
     status: {
       type: String,
       enum: ["Scheduled", "Cancelled", "Completed"],
@@ -33,6 +33,16 @@ const eventSchema = new Schema(
     agenda: { type: String },
     speakers: [{ type: String }],
     sponsors: [{ type: String }],
+    ratingsAverage: {
+      type: Number,
+      default: 4.5,
+      min: [1, "rating must be above 1.0"],
+      max: [5, "rating must be below 5.0"],
+    },
+    ratingsQuantity: {
+      type: Number,
+      default: 0,
+    }
   },
   {
     toJSON: { virtuals: true },
