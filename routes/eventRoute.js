@@ -9,16 +9,24 @@ router.use("/:eventId/reviews", reviewRouter);
 
 router
   .route("/")
-  .get(authController.protect, eventController.getAllEvents)
-  .post(eventController.createEvent);
+  .get(eventController.getAllEvents)
+  .post(
+    authController.protect,
+    authController.restrictedTo("admin", "organizer"),
+    eventController.createEvent
+  );
 
 router
   .route("/:id")
   .get(eventController.getEventById)
-  .patch(eventController.updateEvent)
+  .patch(
+    authController.protect,
+    authController.restrictedTo("admin", "organizer"),
+    eventController.updateEvent
+  )
   .delete(
     authController.protect,
-    authController.restrictedTo("admin"),
+    authController.restrictedTo("admin", "organizer"),
     eventController.deleteEvent // Correctly use deleteEvent here
   );
 module.exports = router;

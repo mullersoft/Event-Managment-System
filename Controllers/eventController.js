@@ -2,7 +2,7 @@ const Event = require("../models/eventModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const factory = require("./handlerFactory");
-
+const APIFeatures = require("./../utils/APIFeatures");
 // const createEvent = factory.createOne(Event)
 const createEvent = catchAsync(async (req, res, next) => {
   const {
@@ -22,11 +22,9 @@ const createEvent = catchAsync(async (req, res, next) => {
     sponsors,
     organizers, // expecting an array of user IDs
   } = req.body;
-
   // Calculate duration in days, rounded up
   const diffInMilliseconds = new Date(endDate) - new Date(startDate);
   const duration = Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24)); // duration in days, rounded up
-
   // Create new Event instance
   const event = new Event({
     title,
@@ -50,63 +48,27 @@ const createEvent = catchAsync(async (req, res, next) => {
     speakers,
     sponsors,
   });
-
   // Save event to database
   const savedEvent = await event.save();
   res.status(201).json({ status: "success", data: { savedEvent } });
 });
-const getAllEvents = catchAsync(async (req, res, next) => {
-  // Build query
-  const queryObj = { ...req.query };
-  const excludeFields = ["page", "sort", "limit", "fields"];
-  excludeFields.forEach((el) => delete queryObj[el]);
-
-  // Advanced filtering
-  let queryString = JSON.stringify(queryObj);
-  queryString = queryString.replace(
-    /\b(gte|gt|lte|lt)\b/g,
-    (match) => `$${match}`
-  );
-  let query = Event.find(JSON.parse(queryString));
-
-  // Sorting
-  if (req.query.sort) {
-    const sortBy = req.query.sort.split(",").join(" ");
-    query = query.sort(sortBy);
-  } else {
-    query = query.sort("-createdAt");
-  }
-
-  // Field limiting
-  if (req.query.fields) {
-    const fields = req.query.fields.split(",").join(" ");
-    query = query.select(fields);
-  } else {
-    query = query.select("-__v");
-  }
-
-  // Pagination
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 100;
-  const skip = (page - 1) * limit;
-  query = query.skip(skip).limit(limit);
-
-  if (req.query.page) {
-    const numEvents = await Event.countDocuments();
-    if (skip >= numEvents) throw new Error("This page does not exist!");
-  }
-
-  // Execute the query
-  const events = await query;
-
-  // Send the response
-  res.status(200).json({
-    status: "success",
-    result: events.length,
-    data: { events },
-  });
-});
-// const getAllEvents = factory.getAll(Event)
+// const getAllEvents = catchAsync(async (req, res, next) => {
+// // try{}
+//   // Execute the query
+//   const features = new APIFeatures(Event.find(), req.query)
+//     .filter()
+//     .sort()
+//     .limitFields()
+//     .paginate();
+//   const events = await features.query;
+//   // Send the response
+//   res.status(200).json({
+//     status: "success",
+//     result: events.length,
+//     data: { events },
+//   });
+// });
+const getAllEvents = factory.getAll(Event)
 const getEventById = factory.getOne(Event, { path: "reviews" });
 const updateEvent = factory.updateOne(Event);
 const deleteEvent = factory.deleteOne(Event);

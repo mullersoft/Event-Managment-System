@@ -50,7 +50,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
     data: null,
   });
 });
-// exports.getAllUsers = factory.getAll(User)
+exports.getAllUsers = factory.getAll(User)
 exports.getUser = factory.getOne(User)
 // do not update users with this
 exports.updateUser = factory.updateOne(User);

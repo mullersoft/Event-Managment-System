@@ -39,6 +39,7 @@ const eventSchema = new Schema(
     toObject: { virtuals: true },
   }
 );
+eventSchema.index ({price:1})
 // virtual populate
 eventSchema.virtual("reviews", {
   ref: "Review",
