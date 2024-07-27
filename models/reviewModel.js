@@ -23,6 +23,7 @@ const reviewSchema = new Schema(
     toObject: { virtuals: true },
   }
 );
+reviewSchema.index({ event: 1, user: 1 }, { unique: true });
 // Query middleware
 reviewSchema.pre(/^find/, function (next) {
   this.populate({ path: "user", select: "name photo" });
@@ -60,7 +61,7 @@ reviewSchema.post("save", function () {
 reviewSchema.pre(/^findOneAnd/, async function (next) {
   this.r = await this.model.findOne(this.getFilter());
   next();
-  // console.log('this.r=',this.r) 
+  // console.log('this.r=',this.r)
 });
 reviewSchema.post(/^findOneAnd/, async function () {
   if (this.r) {
