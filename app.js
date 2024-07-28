@@ -10,6 +10,8 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
 const reviewRouter = require("./routes/reviewRoute");
+const registrationRouter = require("./routes/registrationRoute");
+
 
 const app = express();
 
@@ -51,6 +53,8 @@ app.use(hpp({ whitelist: ["duration"] }));
 app.use("/api/v1/event", eventRoute);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/registration", registrationRouter);
+
 
 // Handling unhandled routes
 app.all("*", (req, res, next) => {
