@@ -2,16 +2,17 @@ const express = require("express");
 const authController = require("../controllers/authController");
 const reviewController = require("./../controllers/reviewController");
 const router = express.Router({ mergeParams: true });
-// protect all routes after this middleware
+
+// Protect all routes after this middleware
 router.use(authController.protect);
-router
-  .route("/")
-  .get(reviewController.getAllReviews)
-  .post(
-    authController.restrictedTo("participant"),
-    reviewController.setEventUserIds,
-    reviewController.createReviews
-  );
+
+// Routes for reviews
+router.route("/").get(reviewController.getAllReviews).post(
+  authController.restrictedTo("participant"),
+  reviewController.setEventUserIds, // Ensure this middleware is correct for setting event and user IDs
+  reviewController.createReviews
+);
+
 router
   .route("/:id")
   .get(reviewController.getReview)
@@ -23,4 +24,5 @@ router
     authController.restrictedTo("participant", "admin"),
     reviewController.deleteReview
   );
+
 module.exports = router;
