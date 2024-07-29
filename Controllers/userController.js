@@ -30,6 +30,8 @@ exports.getMe = (req, res, next) => {
 
 // Controller to update the current user's details
 exports.updateMe = catchAsync(async (req, res, next) => {
+    console.log("req.file=", req.file);
+    console.log("req.body=", req.body);
   // 1) Create an error if the user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
     return next(
