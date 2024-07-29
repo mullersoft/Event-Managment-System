@@ -6,8 +6,8 @@ const router = express.Router({ mergeParams: true });
 // Protect all routes after this middleware
 router.use(authController.protect);
 
-// Routes for reviews
-router.route("/").get(reviewController.getAllReviews).post(
+// Routes for authController.protect,
+router.route("/").get(authController.protect,reviewController.getAllReviews).post(
   authController.restrictedTo("participant"),
   reviewController.setEventUserIds, // Ensure this middleware is correct for setting event and user IDs
   reviewController.createReviews

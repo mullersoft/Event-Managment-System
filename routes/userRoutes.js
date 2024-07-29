@@ -18,10 +18,11 @@ router.patch("/updatePassword", authController.updatePassword);
 router.get("/me", userController.getMe, userController.getUser);
 router.patch("/updateMe", userController.updateMe);
 router.delete("/deleteMe", userController.deleteMe);
+router.get("/logout", authController.logOut);
+
 
 // Restrict following routes to admin only
 router.use(authController.restrictedTo("admin"));
-
 // Admin routes
 router
   .route("/:id")

@@ -6,15 +6,12 @@ const reviewRouter = require("./reviewRoute");
 
 // Nested route for reviews under each event
 router.use("/:eventId/reviews", reviewRouter);
-
 // Route to get events within a specified distance from a given location
 router
   .route("/events-within/:distance/center/:latlng/unit/:unit")
   .get(eventController.getEventsWithin);
-
 // Route to get distances to events from a given location
 router.route("/distances/:latlng/unit/:unit").get(eventController.getDistances);
-
 // Route to get all events and create a new event
 router
   .route("/")
@@ -24,7 +21,6 @@ router
     authController.restrictedTo("admin", "organizer"),
     eventController.createEvent
   );
-
 // Routes for specific event by ID: get, update, delete
 router
   .route("/:id")

@@ -69,7 +69,10 @@ eventSchema.virtual("reviews", {
 
 // Query middleware
 eventSchema.pre(/^find/, function (next) {
-  this.populate({ path: "organizers", select: "-__v -passwordChangedAt" }); // Populate organizers field, excluding __v and passwordChangedAt fields
+  this.populate({
+    path: "organizers",
+    select: "-__v -passwordChangedAt",
+  }) // Populate organizers field, excluding __v and passwordChangedAt fields
   next(); // Call the next middleware
 });
 

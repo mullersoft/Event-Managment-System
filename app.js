@@ -1,17 +1,16 @@
 const express = require("express");
-const eventRoute = require("./routes/eventRoute");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./Controllers/errorController");
-const userRouter = require("./routes/userRoutes");
 const rateLimiter = require("express-rate-limit");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
+const eventRoute = require("./routes/eventRoute");
+const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoute");
 const registrationRouter = require("./routes/registrationRoute");
-
 
 const app = express();
 

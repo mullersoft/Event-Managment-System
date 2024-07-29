@@ -24,6 +24,15 @@ const registrationSchema = new Schema({
   }, // Registration date, default is current date and time
 });
 
+// Query middleware to populate user information and event information
+registrationSchema.pre(/^find/, function (next) {
+  this.populate({ path: "event", select: "-__v" }).populate({
+    path: "user",
+    select: "-__v",
+  });
+  next();
+});
+
 // Create a model using schema
 const Registration = mongoose.model("Registration", registrationSchema);
 

@@ -40,7 +40,12 @@ reviewSchema.index({ event: 1, user: 1 }, { unique: true });
 
 // Query middleware to populate user information
 reviewSchema.pre(/^find/, function (next) {
-  this.populate({ path: "user", select: "name photo" });
+  this.populate({
+    path: "user",
+    select: "name photo",
+  });
+  // .populate({ path: "event", select: "title" })
+
   next();
 });
 
