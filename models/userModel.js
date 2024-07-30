@@ -19,6 +19,7 @@ const userSchema = new Schema({
   }, // User's email, required, must be unique and valid
   photo: {
     type: String,
+    default: 'user-66a4c77d0449b4115b165705-1722322471027.jpeg'
   }, // User's photo URL
   password: {
     type: String,

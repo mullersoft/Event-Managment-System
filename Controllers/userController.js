@@ -2,7 +2,52 @@ const catchAsync = require("../utils/catchAsync");
 const User = require("../models/userModel");
 const AppError = require("../utils/appError");
 const factory = require("./handlerFactory");
+const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
+const sharp = require("sharp");
 
+// Function to ensure directory exists
+const ensureDirExists = (dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+};
+
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     const uploadDir = path.join(__dirname, "public/img/users");
+//     ensureDirExists(uploadDir);
+//     cb(null, uploadDir);
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split("/")[1];
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   },
+// });
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Not an image! Please upload only images.", 400), false);
+  }
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+exports.uploadUserPhoto = upload.single("photo");
+exports.resizeUserPhoto = (req, res, next) => {
+  if (!req.file) return next();
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+  next();
+};
 // Utility function to filter allowed fields from an object
 const filteredObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -30,8 +75,6 @@ exports.getMe = (req, res, next) => {
 
 // Controller to update the current user's details
 exports.updateMe = catchAsync(async (req, res, next) => {
-    console.log("req.file=", req.file);
-    console.log("req.body=", req.body);
   // 1) Create an error if the user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
     return next(
@@ -44,6 +87,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // 2) Update user document
   const filteredBody = filteredObj(req.body, "name", "email");
+  if (req.file) filteredBody.photo = req.file.filename;
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true,
