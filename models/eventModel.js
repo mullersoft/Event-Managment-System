@@ -35,6 +35,7 @@ const eventSchema = new Schema(
     },
     tags: [String], // Array of tags for the event
     imageUrl: { type: String }, // URL of the event's image
+    images: [String],
     agenda: { type: String }, // Agenda of the event
     speakers: [{ type: String }], // Array of speakers for the event
     sponsors: [{ type: String }], // Array of sponsors for the event

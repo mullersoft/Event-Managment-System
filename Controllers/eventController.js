@@ -2,6 +2,44 @@ const Event = require("../models/eventModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const factory = require("./handlerFactory");
+const fs = require("fs");
+const path = require("path");
+const multer = require("multer")
+const sharp = require("sharp");
+// Function to ensure directory exists
+const ensureDirExists = (dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+};
+// Define the upload directory relative to the root directory
+const uploadDir = path.join(__dirname, '../../public/img/users');
+ensureDirExists(uploadDir);
+const multerStorage = multer.memoryStorage();
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Not an image! Please upload only images.", 400), false);
+  }
+};
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+const uploadEventImages = upload.fields([
+  { name: "imageUrl", maxCount: 1 },
+  { name: "images", maxCount: 3 },
+]);
+const resizeEventImages = (req, res, next) => {
+    console.log(req.files);
+  // if (!req.file) return next();
+  // req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+  // sharp(req.file.buffer)
+  //   .resize(500, 500)
+  //   .toFormat("jpeg")
+  //   .jpeg({ quality: 90 })
+  //   .toFile(`public/img/users/${req.file.filename}`);
+  next();
+};
+
 
 /**
  * Creates a new event.
@@ -22,6 +60,7 @@ const createEvent = catchAsync(async (req, res, next) => {
     status,
     tags,
     imageUrl,
+    images,
     agenda,
     speakers,
     sponsors,
@@ -51,6 +90,7 @@ const createEvent = catchAsync(async (req, res, next) => {
     status,
     tags,
     imageUrl,
+    images,
     agenda,
     speakers,
     sponsors,
@@ -64,6 +104,7 @@ const createEvent = catchAsync(async (req, res, next) => {
     data: { savedEvent },
   });
 });
+
 
 /**
  * Gets all events within a specified distance from a center point.
@@ -147,4 +188,6 @@ module.exports = {
   deleteEvent,
   getEventsWithin,
   getDistances,
+  uploadEventImages,
+  resizeEventImages,
 };

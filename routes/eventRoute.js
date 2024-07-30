@@ -28,6 +28,8 @@ router
   .patch(
     authController.protect,
     authController.restrictedTo("admin", "organizer"),
+    eventController.uploadEventImages,
+    eventController.resizeEventImages,
     eventController.updateEvent
   )
   .delete(
