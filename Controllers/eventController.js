@@ -4,7 +4,7 @@ const AppError = require("../utils/appError");
 const factory = require("./handlerFactory");
 const fs = require("fs");
 const path = require("path");
-const multer = require("multer")
+const multer = require("multer");
 const sharp = require("sharp");
 // Function to ensure directory exists
 const ensureDirExists = (dir) => {
@@ -13,7 +13,7 @@ const ensureDirExists = (dir) => {
   }
 };
 // Define the upload directory relative to the root directory
-const uploadDir = path.join(__dirname, '../../public/img/users');
+const uploadDir = path.join(__dirname, "../../public/img/events");
 ensureDirExists(uploadDir);
 const multerStorage = multer.memoryStorage();
 const multerFilter = (req, file, cb) => {
@@ -28,17 +28,32 @@ const uploadEventImages = upload.fields([
   { name: "imageUrl", maxCount: 1 },
   { name: "images", maxCount: 3 },
 ]);
-const resizeEventImages = (req, res, next) => {
-    console.log(req.files);
-  // if (!req.file) return next();
-  // req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-  // sharp(req.file.buffer)
-  //   .resize(500, 500)
-  //   .toFormat("jpeg")
-  //   .jpeg({ quality: 90 })
-  //   .toFile(`public/img/users/${req.file.filename}`);
+const resizeEventImages = catchAsync(async (req, res, next) => {
+  // console.log(req.files);
+  if (!req.files.imageUrl || !req.files.images) return next();
+  //1)cover Image
+  req.body.imageUrl = `event-${req.params.id}-${Date.now()}-cover.jpeg`;
+  await sharp(req.files.imageUrl[0].buffer)
+    .resize(2000, 1333)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/events/${req.body.imageUrl}`);
+  // next();
+  //1) Images
+  req.body.images = []
+  await Promise.all(
+    req.files.images.map(async (file, i)=>{
+      const filename = `event-${req.params.id}-${Date.now()}-${i+1}.jpeg`;
+  await sharp(file.buffer)
+    .resize(2000, 1333)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+        .toFile(`public/img/events/${filename}`);
+      req.body.images.push(filename);
+    }));
+  console.log()
   next();
-};
+})
 
 
 /**
@@ -104,7 +119,6 @@ const createEvent = catchAsync(async (req, res, next) => {
     data: { savedEvent },
   });
 });
-
 
 /**
  * Gets all events within a specified distance from a center point.
