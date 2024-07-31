@@ -11,6 +11,8 @@ const eventRoute = require("./routes/eventRoute");
 const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoute");
 const registrationRouter = require("./routes/registrationRoute");
+const bookingRouter = require("./routes/bookingRoute");
+
 
 const app = express();
 
@@ -49,10 +51,12 @@ app.use(xss());
 app.use(hpp({ whitelist: ["duration"] }));
 
 // 2) Routes
-app.use("/api/v1/event", eventRoute);
+app.use("/api/v1/events", eventRoute);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
-app.use("/api/v1/registration", registrationRouter);
+app.use("/api/v1/registrations", registrationRouter);
+app.use("/api/v1/bookings", bookingRouter);
+
 
 
 // Handling unhandled routes
