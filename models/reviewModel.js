@@ -16,7 +16,7 @@ const reviewSchema = new Schema(
     }, // The rating given by the user, must be between 1 and 5
     createdAt: {
       type: Date,
-      default: Date.now,
+      default: Date.now(),
     }, // The date when the review was created, default is current date
     user: {
       type: Schema.Types.ObjectId,

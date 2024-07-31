@@ -6,6 +6,10 @@ const factory = require("./handlerFactory");
 
 exports.getAllRegistrations = factory.getAll(Registration); 
 exports.getRegistration = factory.getOne(Registration);
+exports.updateRegistration = factory.updateOne(Registration);
+exports.deleteRegistration = factory.deleteOne(Registration);
+
+
 
 exports.registerForEvent = catchAsync(async (req, res, next) => {
   const { eventId } = req.params;

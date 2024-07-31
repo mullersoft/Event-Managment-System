@@ -12,10 +12,12 @@ router.get(
 );
 // Register for an event
 router.post("/register/:eventId", registrationController.registerForEvent);
-
 // Cancel registration
 router.patch("/cancel/:eventId", registrationController.cancelRegistration);
-router.get('/:id', registrationController.getRegistration); // Add this line
-
+router
+  .route("/")
+  .get(registrationController.getRegistration)
+  .patch(registrationController.updateRegistration)
+  .delete(registrationController.deleteRegistration); 
 
 module.exports = router;
