@@ -1,39 +1,43 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const mongoose = require("mongoose"); // Import Mongoose for MongoDB interactions
+const Schema = mongoose.Schema; // Alias for Mongoose Schema
 
 // Define schema for Registration
 const registrationSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
-    required: true,
-  }, // Reference to the User model, required
+    required: true, // Reference to the User model, required
+  },
   event: {
     type: Schema.Types.ObjectId,
     ref: "Event",
-    required: true,
-  }, // Reference to the Event model, required
-  status: {
+    required: true, // Reference to the Event model, required
+  },
+  registrationStatus: {
     type: String,
-    enum: ["registered", "cancelled"], // Status of registration, can be 'registered' or 'cancelled'
+    enum: ["registered", "cancelled", "confirmed"], // Status of registration, can be 'registered', 'cancelled', or 'confirmed'
     default: "registered", // Default status is 'registered'
   },
   registeredAt: {
     type: Date,
-    default: Date.now,
-  }, // Registration date, default is current date and time
+    default: Date.now, // Registration date, default is the current date and time
+  },
 });
 
-// Query middleware to populate user information and event information
+// Query middleware to populate user and event information in registration documents
 registrationSchema.pre(/^find/, function (next) {
-  this.populate({ path: "event", select: "-__v" }).populate({
+  this.populate({
+    path: "event",
+    select: "-__v", // Populate the 'event' field excluding the '__v' field from the Event model
+  }).populate({
     path: "user",
-    select: "-__v",
+    select: "-__v", // Populate the 'user' field excluding the '__v' field from the User model
   });
-  next();
+  next(); // Proceed to the next middleware or query execution
 });
 
-// Create a model using schema
+// Create a model using the schema
 const Registration = mongoose.model("Registration", registrationSchema);
 
-module.exports = Registration; // Export the Registration model
+// Export the Registration model
+module.exports = Registration;

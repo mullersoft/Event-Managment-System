@@ -28,9 +28,9 @@ const eventSchema = new Schema(
       required: [true, "an event must have a price"], // Price of the event, required with a custom error message
       default: 0, // Default price is 0
     },
-    status: {
+    eventStatus: {
       type: String,
-      enum: ["Scheduled", "Cancelled", "Completed"], // Status of the event, must be one of these values
+      enum: ["Scheduled", "Cancelled","postponed", "Completed"], // Status of the event, must be one of these values
       default: "Scheduled", // Default status is 'Scheduled'
     },
     tags: [String], // Array of tags for the event
@@ -50,6 +50,7 @@ const eventSchema = new Schema(
       type: Number,
       default: 0, // Default quantity of ratings is 0
     },
+    registrationDeadline: { type: Date, required: true }, // Registration deadline for the event
   },
   {
     toJSON: { virtuals: true }, // Include virtuals when toJSON is called
