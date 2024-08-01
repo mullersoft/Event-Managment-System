@@ -2,51 +2,7 @@
 
 This project is an event management system built with Node.js, Express, and MongoDB. It allows users to create, manage, and discover events. Additionally, it provides functionalities for reviews, registrations, and bookings. Here's a detailed breakdown:
 
-## Features
-## Technologies
-- **Backend:** Node.js, Express
-- **Database:** MongoDB
-- **API Testing:** Postman
-- **Payment Processing:** Stripe
-
-### Event Management
-- Create events with details like title, description, dates, location (including geospatial data), capacity, category, price, status, tags, imageUrl, agenda, speakers, sponsors, and organizers.
-- View all events.
-- Get details of a specific event.
-- Search for events within a radius or based on distance from a point.
-- Update event information.
-- Delete events.
-
-### User Management
-- User signup and login with role-based authorization (e.g., admin, user).
-- User profile management (update name, photo).
-- Get current user details.
-
-### Reviews
-- Create reviews for events with rating and text.
-- View all reviews for an event.
-- Get details of a specific review.
-- Update review content.
-- Delete reviews.
-
-## Functional Requirements
-- Users can create, manage, and discover events.
-- Users can register for events.
-- Users can book tickets for events.
-- Users can leave reviews for events.
-- Users can manage their profiles.
-- The system facilitates secure user authentication and authorization.
-- The system efficiently retrieves events based on location or distance.
-
-## Non-Functional Requirements
-- The system should be scalable and handle a growing number of users and events.
-- The system should be performant and provide fast response times.
-- The system should be secure and protect user data.
-- The API should be well-documented and easy to use.
-
 ### Database and Relationships
-The database likely includes the following collections:
-
 ## eventModel.js
 
 This file defines the schema for events within the event management system. An event represents a planned activity with details like title, description, dates, and registration options.
@@ -204,6 +160,127 @@ This file defines the schema for bookings within the event management system. A 
 **Query Middleware:**
 
 * Populates `user` and `event` information in booking documents during retrieval.
+Absolutely! Here's the updated README.MD file incorporating the API documentation:
+
+### API Documentation
+## User Endpoints
+* GET `/users`
+Retrieve a list of all users.
+
+* POST `/users`
+Create a new user.
+
+* GET `/users/:id`
+Retrieve a specific user by ID.
+
+* PATCH `/users/:id`
+Update a specific user by ID.
+
+* DELETE `/users/:id`
+Delete a specific user by ID.
+
+* POST `/users/signup`
+Register a new user.
+
+* POST `/users/login`
+Authenticate and login a user.
+
+* POST `/users/forgotPassword`
+Request a password reset token.
+
+* PATCH `/users/resetPassword`
+Reset password using the token.
+
+## Event Endpoints
+* GET `/events`
+Retrieve a list of all events.
+
+* POST `/events`
+Create a new event.
+
+* GET `/events/:id`
+Retrieve a specific event by ID.
+
+* PATCH `/events/:id`
+Update a specific event by ID.
+
+* DELETE `/events/:id`
+Delete a specific event by ID.
+
+* GET `/events/category/:category`
+Retrieve events by category.
+
+* GET `/events/search`
+Search for events based on query parameters.
+
+## Registration Endpoints
+* GET `/registrations`
+Retrieve a list of all registrations.
+
+* POST `/registrations`
+Register a user for an event.
+
+* GET `/registrations/:id`
+Retrieve a specific registration by ID.
+
+* PATCH `/registrations/:id`
+Update a specific registration by ID.
+
+* DELETE `/registrations/:id`
+Cancel a specific registration by ID.
+
+## Booking Endpoints
+* GET `/bookings`
+Retrieve a list of all bookings.
+
+* POST `/bookings`
+Create a new booking.
+
+* GET `/bookings/:id`
+Retrieve a specific booking by ID.
+
+* PATCH `/bookings/:id`
+Update a specific booking by ID.
+
+* DELETE `/bookings/:id`
+Cancel a specific booking by ID.
+
+## Review Endpoints
+* GET `/reviews`
+Retrieve a list of all reviews.
+
+* POST `/reviews`
+Create a new review.
+
+* GET `/reviews/:id`
+Retrieve a specific review by ID.
+
+* PATCH `/reviews/:id`
+Update a specific review by ID.
+
+* DELETE `/reviews/:id`
+Delete a specific review by ID.
+
+* GET `/events/:id/reviews`
+Retrieve all reviews for a specific event.
+
+* GET `/users/:id/reviews`
+Retrieve all reviews written by a specific user.
+
+## Additional Endpoints
+* GET `/events/:id/ratings`
+Get the average ratings for a specific event.
+
+* GET `/users/:id/bookings`
+Retrieve all bookings made by a specific user.
+
+* GET `/users/:id/registrations`
+Retrieve all event registrations made by a specific user.
+### Technologies
+- **Backend:** Node.js, Express
+- **Database:** MongoDB
+- **API Testing:** Postman
+- **Payment Processing:** Stripe
 
 
   
